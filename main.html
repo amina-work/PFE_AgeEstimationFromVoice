@@ -9,12 +9,13 @@
 </head>
 <body>
     <div id="pageone" class="container">
-        <h1>Estimate your age with just your voice</h1>
-        <div class="display">
-        </div>
-        <div class="controllers">
-            <span class="material-icons">mic</span>
-        </div>
+        <h1>Estimate your age from just your voice</h1>
+        <button id="micToggle" class="mic-toggle">
+            <span class="material-icons" id="micIcon">mic</span>
+        </button>
+        <br />
+        <p id="isRecording">Click the microphone to start recording</p>
+        <audio src="" id="audioElement" controls></audio>
     </div>
     
     <div id="pagetwo"></div>

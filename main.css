@@ -12,78 +12,59 @@ body {
 
 .container {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem 2rem;
 }
 .container h1{
     padding-bottom: 30px;
 }
-.controllers {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    margin: 10px;
-}
-
-.controllers button{
-    background-color: #e1ecf4;
-    border-radius: 3px;
-    border: 1px solid #7aa7c7;
-    box-shadow: rgba(255, 255, 255, .7) 0 1px 0 0 inset;
-    box-sizing: border-box;
-    color: #39739d;
-    cursor: pointer;
-    display: inline-block;
-    font-family: -apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.15385;
-    margin: 0;
+button {
+    border: none;
     outline: none;
-    padding: 8px .8em;
+    background: none;
+    appearance: none;
+    cursor: pointer;
+}
+.mic-toggle{
     position: relative;
-    text-align: center;
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    vertical-align: baseline;
-    white-space: nowrap;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    border-radius: 50%;
+    background-color: #A5C4D4;
+    margin-bottom: 1rem;
 }
-.controllers button:hover,
-.controllers button:focus {
-    background-color: #b3d3ea;
-    color: #2c5777;
+.mic-toggle:after,
+.mic-toggle:before{
+    --pad:8rem;
+    content: '';
+    display: block;
+    position: absolute;
+    z-index: 0;
+    background-color: rgba(20, 43, 220, 0.2);
+    top: var(--pad);
+    left: var(--pad);
+    right: var(--pad);
+    bottom: var(--pad);
+    border-radius: 50%;
 }
-
-.controllers button:focus {
-    box-shadow: 0 0 0 4px rgba(0, 149, 255, .15);
+.mic-toggle:after{
+    transition: 0.4s;
 }
-
-.controllers button:active {
-    background-color: #a0c7e4;
-    box-shadow: none;
-    color: #2c5777;
+.mic-toggle:before{
+    transition: 0.2s;
 }
-
-.display audio:hover, audio:focus, audio:active
-{
-    -webkit-box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
-    -moz-box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
-    box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
-    -webkit-transform: scale(1.05);
-    -moz-transform: scale(1.05);
-    transform: scale(1.05);
+.mic-toggle:hover:after{
+    --pad:-2rem;
 }
-
-
-.display audio{
-    -webkit-transition:all 0.5s linear;
-    -moz-transition:all 0.5s linear;
-    -o-transition:all 0.5s linear;
-    transition:all 0.5s linear;
-    -moz-box-shadow: 2px 2px 4px 0px #2c5777;
-    -webkit-box-shadow:  2px 2px 4px 0px #2c5777;
-    box-shadow: 2px 2px 4px 0px #2c5777;
-    -moz-border-radius:7px 7px 7px 7px ;
-    -webkit-border-radius:7px 7px 7px 7px ;
-    border-radius:7px 7px 7px 7px ;
+.mic-toggle:hover:before{
+    --pad:-1rem;
+}
+.mic-toggle span{
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    font-size: 6rem;
 }

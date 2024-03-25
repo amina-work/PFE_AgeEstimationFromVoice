@@ -1,120 +1,64 @@
-// collect DOMs
-const display = document.querySelector('.display')
-const controllerWrapper = document.querySelector('.controllers')
+let isRecording = false;
+let isRecordingText = document.getElementById("isRecording");
+let micToggle = document.getElementById("micToggle");
+let micIcon = document.getElementById("micIcon");
+let audioChunks = [];
+let rec;
 
-const State = ['Initial', 'Record', 'Download']
-let stateIndex = 0
-let mediaRecorder, chunks = [], audioURL = ''
+micToggle.addEventListener("click", toggleRecording);
 
-// mediaRecorder setup for audio
-if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-    console.log('mediaDevices supported..')
-
-    navigator.mediaDevices.getUserMedia({
-        audio: true
-    }).then(stream => {
-        mediaRecorder = new MediaRecorder(stream)
-
-        mediaRecorder.ondataavailable = (e) => {
-            chunks.push(e.data)
-        }
-
-        mediaRecorder.onstop = () => {
-            const blob = new Blob(chunks, {'type': 'audio/ogg; codecs=opus'})
-            chunks = []
-            audioURL = window.URL.createObjectURL(blob)
-            document.querySelector('audio').src = audioURL
-
-        }
-    }).catch(error => {
-        console.log('Following error has occured : ',error)
-    })
-}else{
-    stateIndex = ''
-    application(stateIndex)
-}
-
-const clearDisplay = () => {
-    display.textContent = ''
-}
-
-const clearControls = () => {
-    controllerWrapper.textContent = ''
-}
-
-const record = () => {
-    stateIndex = 1
-    mediaRecorder.start()
-    application(stateIndex)
-}
-
-const stopRecording = () => {
-    stateIndex = 2
-    mediaRecorder.stop()
-    application(stateIndex)
-}
-
-const downloadAudio = () => {
-    const downloadLink = document.createElement('a')
-    downloadLink.href = audioURL
-    downloadLink.setAttribute('download', 'audio')
-    downloadLink.click()
-}
-
-const addButton = (id, funString, text) => {
-    const btn = document.createElement('button')
-    btn.id = id
-    btn.setAttribute('onclick', funString)
-    btn.textContent = text
-    controllerWrapper.append(btn)
-}
-
-const addMessage = (text) => {
-    const msg = document.createElement('p')
-    msg.textContent = text
-    display.append(msg)
-}
-
-const addAudio = () => {
-    const audio = document.createElement('audio')
-    audio.controls = true
-    audio.src = audioURL
-    display.append(audio)
-}
-
-const application = (index) => {
-    switch (State[index]) {
-        case 'Initial':
-            clearDisplay()
-            clearControls()
-
-            addButton('record', 'record()', 'Start Recording')
-            break;
-
-        case 'Record':
-            clearDisplay()
-            clearControls()
-
-            addMessage('Recording...')
-            addButton('stop', 'stopRecording()', 'Stop Recording')
-            break
-
-        case 'Download':
-            clearControls()
-            clearDisplay()
-
-            addAudio()
-            addButton('record', 'record()', 'Record Again')
-            break
-
-        default:
-            clearControls()
-            clearDisplay()
-
-            addMessage('Your browser does not support mediaDevices')
-            break;
+async function getUserMedia(constraints) {
+    if (navigator.mediaDevices) {
+        return navigator.mediaDevices.getUserMedia(constraints);
     }
-
+    let legacyApi =
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia;
+    if (legacyApi) {
+        return new Promise(function (resolve, reject) {
+            legacyApi.bind(navigator)(constraints, resolve, reject);
+        });
+    } else {
+        alert("User media API not supported");
+    }
 }
 
-application(stateIndex)
+function handlerFunction(stream) {
+    rec = new MediaRecorder(stream);
+    rec.start();
+    audioChunks = []; // Clearing the audioChunks array before starting a new recording
+    rec.ondataavailable = (e) => {
+        audioChunks.push(e.data);
+        if (rec.state == "inactive") {
+            let blob = new Blob(audioChunks, { type: "audio/mp3" });
+            console.log(blob);
+            document.getElementById("audioElement").src = URL.createObjectURL(blob);
+        }
+    };
+}
+
+function startRecording() {
+    getUserMedia({ audio: true }).then((stream) => {
+        handlerFunction(stream);
+    });
+    isRecording = true;
+    isRecordingText.textContent = "Recording...";
+    micIcon.textContent = "stop";
+}
+
+function stopRecording() {
+    rec.stop();
+    isRecording = false;
+    isRecordingText.textContent = "Click the microphone to start re-recording";
+    micIcon.textContent = "mic";
+}
+
+function toggleRecording() {
+    if (isRecording) {
+        stopRecording();
+    } else {
+        startRecording();
+    }
+}
