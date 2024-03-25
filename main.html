@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voice-Based Age Estimation</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600&family=Noto+Serif:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
@@ -16,9 +19,15 @@
         <br />
         <p id="isRecording">Click the microphone to start recording</p>
         <audio src="" id="audioElement" controls></audio>
+
+        <button class="nextpage" id="nextpage">See Result</button>
     </div>
     
-    <div id="pagetwo"></div>
+    <div id="pagetwo" class="container">
+        <h1>We estimate you are...</h1>
+        <h2 class="result">10-15</h2>
+        <button class="goback" id="goback">Try Again?</button>
+    </div>
 
     <script src="main.js"></script>
 </body>

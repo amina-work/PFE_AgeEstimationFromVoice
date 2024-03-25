@@ -5,7 +5,19 @@ let micIcon = document.getElementById("micIcon");
 let audioChunks = [];
 let rec;
 
+// Get references to page elements
+let nextPageButton = document.getElementById("nextpage");
+let goBackButton = document.getElementById("goback");
+let pageOne = document.getElementById("pageone");
+let pageTwo = document.getElementById("pagetwo");
+
+// Initially hide the "See results" button and pagetwo
+nextPageButton.style.display = "none";
+pageTwo.style.display = "none";
+
 micToggle.addEventListener("click", toggleRecording);
+nextPageButton.addEventListener("click", showPageTwo);
+goBackButton.addEventListener("click", showPageOne);
 
 async function getUserMedia(constraints) {
     if (navigator.mediaDevices) {
@@ -35,6 +47,8 @@ function handlerFunction(stream) {
             let blob = new Blob(audioChunks, { type: "audio/mp3" });
             console.log(blob);
             document.getElementById("audioElement").src = URL.createObjectURL(blob);
+            // Show the "See results" button when a recording is available
+            nextPageButton.style.display = "block";
         }
     };
 }
@@ -61,4 +75,14 @@ function toggleRecording() {
     } else {
         startRecording();
     }
+}
+
+function showPageTwo() {
+    pageOne.style.display = "none";
+    pageTwo.style.display = "flex";
+}
+
+function showPageOne() {
+    pageTwo.style.display = "none";
+    pageOne.style.display = "flex";
 }
