@@ -22,68 +22,7 @@ body {
     cursor: pointer;
     margin: 10px;
 }
-
-.controllers button{
-    background-color: #e1ecf4;
-    border-radius: 3px;
-    border: 1px solid #7aa7c7;
-    box-shadow: rgba(255, 255, 255, .7) 0 1px 0 0 inset;
-    box-sizing: border-box;
-    color: #39739d;
+button {
+    padding: 7px 20px;
     cursor: pointer;
-    display: inline-block;
-    font-family: -apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.15385;
-    margin: 0;
-    outline: none;
-    padding: 8px .8em;
-    position: relative;
-    text-align: center;
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    vertical-align: baseline;
-    white-space: nowrap;
-}
-.controllers button:hover,
-.controllers button:focus {
-    background-color: #b3d3ea;
-    color: #2c5777;
-}
-
-.controllers button:focus {
-    box-shadow: 0 0 0 4px rgba(0, 149, 255, .15);
-}
-
-.controllers button:active {
-    background-color: #a0c7e4;
-    box-shadow: none;
-    color: #2c5777;
-}
-
-.display audio:hover, audio:focus, audio:active
-{
-    -webkit-box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
-    -moz-box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
-    box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
-    -webkit-transform: scale(1.05);
-    -moz-transform: scale(1.05);
-    transform: scale(1.05);
-}
-
-
-.display audio{
-    -webkit-transition:all 0.5s linear;
-    -moz-transition:all 0.5s linear;
-    -o-transition:all 0.5s linear;
-    transition:all 0.5s linear;
-    -moz-box-shadow: 2px 2px 4px 0px #2c5777;
-    -webkit-box-shadow:  2px 2px 4px 0px #2c5777;
-    box-shadow: 2px 2px 4px 0px #2c5777;
-    -moz-border-radius:7px 7px 7px 7px ;
-    -webkit-border-radius:7px 7px 7px 7px ;
-    border-radius:7px 7px 7px 7px ;
 }
