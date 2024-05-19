@@ -4,9 +4,10 @@ import numpy as np
 from keras.models import load_model
 import os
 
+
 app = Flask(__name__)
 
-age_classes = [1, 2, 3, 4, 5, 6, 7, 8]
+age_classes = ["> 19", "20 - 29", "30-39", "40-49", "50-59", "60-69", "70-79", "80 <"]
 model = load_model('my_model.h5')
 
 @app.route('/')
@@ -21,7 +22,7 @@ def index():
         <link rel="stylesheet" href="static/app.css">
     </head>
     <body>
-        <div class="container">
+        <div class="container" id="questions">
             <h1>Voice-Based Age Estimation</h1>
             <form id="ageEstimationForm" action="/predict" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
@@ -59,8 +60,37 @@ def index():
                 </div>
                 <button type="submit">Submit</button>
             </form>
-            <div id="ageResult"></div><div id="ageResultProbability"></div>
         </div>
+        <div class="container" id="results">
+            <h1>The results</h1>
+            <div id="ageResult"></div>
+            <div id="ageResultProbability"></div>
+            <button id="tryAgainButton">Try Again?</button>
+        </div>
+        <script>
+            document.getElementById('ageEstimationForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                var formData = new FormData(this);
+                
+                fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('questions').style.display = 'none';
+                    document.getElementById('results').style.display = 'block';
+                    document.getElementById('ageResult').textContent = 'Age Category: ' + data.top_predicted_age_category.age_category;
+                    document.getElementById('ageResultProbability').textContent = 'Probability: ' + (data.top_predicted_age_category.probability * 100).toFixed(2) + '%';
+                })
+                .catch(error => console.error('Error:', error));
+            });
+            document.getElementById('tryAgainButton').addEventListener('click', function() {
+                document.getElementById('results').style.display = 'none';
+                document.getElementById('questions').style.display = 'block';
+            });
+        </script>
     </body>
     </html>
     """
@@ -114,7 +144,7 @@ def predict_age():
     
     result = {
         'top_predicted_age_category': {
-            'age_category': int(top_prediction_class),
+            'age_category': str(top_prediction_class) + " years",
             'probability': float(top_prediction_prob)
         }
     }
