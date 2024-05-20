@@ -63,8 +63,40 @@ button:hover {
     background-color: #e2e8f0;
     color: #000;
 }
-
-
+.recording-btns{
+    display: flex;
+    gap: 10px;
+}
+.recording-btns button{
+    padding: .5rem 1rem;
+    width:10rem;
+    border-radius: 5%;
+    color: #e2e8f0;
+    text-transform: capitalize;
+    background-color: #7D9AA3;
+}
+.recording-btns button:hover{
+    color: #fff;
+    background-color: #506E76;
+}
+.sentence {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #e0eaf1;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+.sentence h4 {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    color: #333;
+}
+.sentence p {
+    margin: 0;
+    font-size: 16px;
+    color: #555;
+    text-transform: capitalize;
+}
 /* =========== Page Two ===========*/
 #results {display: none;}
 .container h1 {

@@ -5,10 +5,8 @@ from keras.models import load_model
 import os
 import random
 from pydub import AudioSegment
-AudioSegment.ffmpeg = r"C:\ffmpeg\ffmpeg-2024-05-20-git-127ded5078-full_build\bin\ffmpeg.exe"
 
 app = Flask(__name__)
-
 
 sentences = [
     "most of them were staring quietly at the big table",
@@ -73,7 +71,7 @@ def index():
                 </div>
                 <div class="form-group">
                     <label for="audioFile">Upload an audio recording of your voice:</label>
-                    <input type="file" id="audioFile" name="audioFile" accept="audio/mp3">
+                    <input type="file" id="audioFile" name="audioFile" accept="audio/mp3" required>
                 </div>
                 <div class="form-group">
                     <label for="recordAudio">Or record an audio recording of your voice:</label>
@@ -82,7 +80,6 @@ def index():
                         <button type="button" id="recordButton">Record</button>
                         <button type="button" id="stopButton" disabled>Stop</button>
                     </div>
-                    <input type="hidden" id="recordedAudioPath" name="recordedAudioPath">
                 </div>
                 <button type="submit">Submit</button>
             </form>
@@ -145,7 +142,6 @@ def index():
                 mediaRecorder.stop();
                 document.getElementById('recordButton').disabled = false;
                 document.getElementById('stopButton').disabled = true;
-                document.getElementById('recordedAudioPath').value = audioURL;
             });
         </script>
     </body>
@@ -155,68 +151,85 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict_age():
-    if 'audioFile' in request.files:
-        file = request.files['audioFile']
-        audio_path = os.path.join('newdata', 'temp_audio.mp3')
-        file.save(audio_path)
-    elif 'recordedAudioPath' in request.form:
-        audio_path = request.form['recordedAudioPath']
-    else:
-        return jsonify({'error': 'No audio file uploaded or recorded'})
-
+    if 'audioFile' not in request.files:
+        return jsonify({'error': 'No file part'})
+    
+    file = request.files['audioFile']
     gender = request.form.get('gender')
     accent = request.form.get('accent')
+    
+    if not os.path.exists('newdata'):
+        os.makedirs('newdata')
+    
+    audio_path = os.path.join('newdata', 'temp_audio.mp3')
+    file.save(audio_path)
 
-    # Convert gender and accent to one-hot encoded arrays
-    gender_encoding = {'female': [0, 1, 0], 'male': [1, 0, 0], 'other': [0, 0, 1]}
-    accent_encoding = {
-        'us': [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        'england': [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        'indian': [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        'australia': [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        'canada': [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        'scotland': [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        'african': [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        'newzealand': [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-        'ireland': [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-        'philippines': [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-        'wales': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        'bermuda': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-        'malaysia': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        'singapore': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        'hongkong': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-        'southatlandtic': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-    }
+    if gender == "female":
+        gender = [0, 1, 0]
+    elif gender == "male":
+        gender = [1, 0, 0]
+    else: 
+        gender = [0, 0, 0]
 
-    gender = gender_encoding.get(gender, [0, 0, 0])
-    accent = accent_encoding.get(accent, [0] * 16)
+    if accent == "us":
+        accent = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "england":
+        accent = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "indian":
+        accent = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "australia":
+        accent = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "canada":
+        accent = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "scotland":
+        accent = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "african":
+        accent = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "newzealand":
+        accent = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "ireland":
+        accent = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+    elif accent == "philippines":
+        accent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+    elif accent == "wales":
+        accent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+    elif accent == "bermuda":
+        accent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+    elif accent == "malaysia":
+        accent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+    elif accent == "singapore":
+        accent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+    elif accent == "hongkong":
+        accent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+    elif accent == "southatlandtic":
+        accent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
 
-    # Extract audio features using librosa
+    features = gender + accent
+    
     audio, sampling_rate = librosa.load(audio_path, sr=16000)
     spectral_centroid = np.mean(librosa.feature.spectral_centroid(y=audio, sr=sampling_rate))
     spectral_bandwidth = np.mean(librosa.feature.spectral_bandwidth(y=audio, sr=sampling_rate))
     spectral_rolloff = np.mean(librosa.feature.spectral_rolloff(y=audio, sr=sampling_rate))
-
-    features = gender + accent + [spectral_centroid, spectral_bandwidth, spectral_rolloff]
+    features.extend([spectral_centroid, spectral_bandwidth, spectral_rolloff])
     mfcc = librosa.feature.mfcc(y=audio, sr=sampling_rate, n_mfcc=20)
     for el in mfcc:
         features.append(np.mean(el))
-
+    
     features = np.array(features).reshape(1, -1)
-
-    # Make predictions using the loaded model
+    
     predicted_probs = model.predict(features)
     top_prediction_index = np.argmax(predicted_probs)
     top_prediction_class = age_classes[top_prediction_index]
     top_prediction_prob = predicted_probs[0][top_prediction_index]
-
+    
     result = {
         'top_predicted_age_category': {
             'age_category': str(top_prediction_class) + " years old",
             'probability': float(top_prediction_prob)
         }
     }
-
+    
+    print(result)
     return jsonify(result)
 
 if __name__ == '__main__':
