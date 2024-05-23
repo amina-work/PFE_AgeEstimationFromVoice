@@ -33,7 +33,19 @@ def index():
         <link rel="stylesheet" href="static/app.css">
     </head>
     <body>
+        <div class="container" id="about">
+            <div class="nav" id="nav">
+                <div class="gotoabout active" onclick="showAbout()">About</div>
+                <div class="gotoprediction" onclick="showPrediction()">Age Prediction</div>
+            </div>
+            <h1>What is this App?</h1>
+            <p>Utilizing advanced voice analysis techniques, this application determines the age range of individuals based on their voice samples. By incorporating information such as gender and accent, the predictions are tailored and more precise.</p>
+        </div>
         <div class="container" id="questions">
+            <div class="nav" id="nav">
+                <div class="gotoabout" onclick="showAbout()">About</div>
+                <div class="gotoprediction active" onclick="showPrediction()">Age Prediction</div>
+            </div>
             <h1>Voice-Based Age Estimation</h1>
             <form id="ageEstimationForm" action="/predict" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
@@ -63,6 +75,7 @@ def index():
                         <option value="singapore">Singapore</option>
                         <option value="hongkong">Hong Kong</option>
                         <option value="southatlandtic">South Atlantic</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
                 
@@ -74,12 +87,30 @@ def index():
             </form>
         </div>
         <div class="container" id="results">
+            <div class="nav" id="nav">
+                <div class="gotoabout" onclick="showAbout()">About</div>
+                <div class="gotoprediction active" onclick="showPrediction()">Age Prediction</div>
+            </div>
             <h1>The results</h1>
             <div id="ageResult"></div>
             <div id="ageResultProbability"></div>
             <button id="tryAgainButton">Try Again?</button>
         </div>
         <script>
+            function showAbout() {
+                document.getElementById('about').style.display = 'block';
+                document.getElementById('questions').style.display = 'none';
+                document.getElementById('results').style.display = 'none';
+                document.querySelector('.gotoabout').classList.add('active');
+                document.querySelector('.gotoprediction').classList.remove('active');
+            }
+            function showPrediction() {
+                document.getElementById('about').style.display = 'none';
+                document.getElementById('questions').style.display = 'block';
+                document.getElementById('results').style.display = 'none';
+                document.querySelector('.gotoabout').classList.remove('active');
+                document.querySelector('.gotoprediction').classList.add('active');
+            }
             document.getElementById('ageEstimationForm').addEventListener('submit', function(event) {
                 event.preventDefault();
                 var formData = new FormData(this);
@@ -140,7 +171,8 @@ def predict_age():
         'malaysia': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
         'singapore': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
         'hongkong': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-        'southatlandtic': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        'southatlandtic': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        'other': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     }
     if 'audioFile' in request.files:
         file = request.files['audioFile']
